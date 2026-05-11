@@ -1,0 +1,30 @@
+# .github/workflows/cloudnua.yml
+# Managed by CloudNua (https://cloudnua.com).
+# Uninstall at https://github.com/settings/installations.
+
+name: CloudNua
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: cloudnua-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.x pinned
+      - uses: cloudnua/agent-harness-action@8e3f740853807206930a029f8347d24640227820  # v1.x pinned
+        with:
+          api-token: ${{ secrets.CLOUDNUA_API_KEY }}
+          # Scan-only mode: agent-command is intentionally omitted.
+          # Harness v1.1.0+ treats absence as scan-only — workspace is
+          # walked, manifests parsed, Check Run posted, no agent runs.
